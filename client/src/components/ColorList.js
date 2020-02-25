@@ -7,7 +7,7 @@ const initialColor = {
   code: { hex: "" }
 };
 
-const ColorList = ({ colors, updateColors, setColorList }) => {
+const ColorList = ({ colors, updateColors }) => {
   console.log(colors);
   const [editing, setEditing] = useState(false);
   const [colorToEdit, setColorToEdit] = useState(initialColor);
@@ -18,7 +18,7 @@ const ColorList = ({ colors, updateColors, setColorList }) => {
   };
 
   const saveEdit = e => {
-    e.preventDefault();
+    // e.preventDefault();
     axiosWithAuth()
     .put(`/colors/${colorToEdit.id}`, colorToEdit)
     .then(res => {
@@ -34,27 +34,22 @@ const ColorList = ({ colors, updateColors, setColorList }) => {
 
   const deleteColor = color => {
     // make a delete request to delete this color
+
     axiosWithAuth()
-      .delete(`/colors/${colorToEdit.id}`)
+      .delete(`/colors/${color}`)
       .then(res => {
-        setColorList(res.data)
+        console.log(res.data)
+        updateColors(colors.filter(item => item.id !== color.id))
+        
       })
       .catch(err => console.log(err.response))
   };
 
-  const addColor = e => {
-    axiosWithAuth()
-    .post('/colors')
-    .then(res => {
-      updateColors(res.data)
-    })
-    .catch(err => console.log(err.response))
-  }
 
   return (
     <div className="colors-wrap">
       <p>colors</p>
-      <form onSubmit={addColor}>
+      {/* <form onSubmit={addColor}>
         <input
           name='color'
           type='text'
@@ -68,7 +63,7 @@ const ColorList = ({ colors, updateColors, setColorList }) => {
           onChange={e => setColorToEdit({...colorToEdit, code: {hex:e.target.value}})}
           />
           <button>Submit</button>
-      </form>
+      </form> */}
       <ul>
         {colors.map(color => (
           <li key={color.color} onClick={() => editColor(color)}>
