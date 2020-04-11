@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import {axiosWithAuth} from './axiosWithAuth'
 
 const initialColor = {
   color: "",
@@ -17,7 +18,15 @@ const ColorList = ({ colors, updateColors }) => {
   };
 
   const saveEdit = e => {
-    e.preventDefault();
+    // e.preventDefault();
+    axiosWithAuth()
+    .put(`/colors/${colorToEdit.id}`, colorToEdit)
+    .then(res => {
+      console.log('put', res.data)
+      updateColors(res.data)
+    })
+    .catch(err => {console.log('Error', err)})
+    
     // Make a put request to save your updated color
     // think about where will you get the id from...
     // where is is saved right now?
@@ -25,11 +34,36 @@ const ColorList = ({ colors, updateColors }) => {
 
   const deleteColor = color => {
     // make a delete request to delete this color
+
+    axiosWithAuth()
+      .delete(`/colors/${color}`)
+      .then(res => {
+        console.log(res.data)
+        updateColors(colors.filter(item => item.id !== color.id))
+        
+      })
+      .catch(err => console.log(err.response))
   };
+
 
   return (
     <div className="colors-wrap">
       <p>colors</p>
+      {/* <form onSubmit={addColor}>
+        <input
+          name='color'
+          type='text'
+          placeholder='Color'
+          value={colorToEdit.color}
+          onChange={e => setColorToEdit({...colorToEdit, color: e.target.value})}
+          />
+          <input
+          placeholder='hex'
+          value={colorToEdit.code.hex}
+          onChange={e => setColorToEdit({...colorToEdit, code: {hex:e.target.value}})}
+          />
+          <button>Submit</button>
+      </form> */}
       <ul>
         {colors.map(color => (
           <li key={color.color} onClick={() => editColor(color)}>
@@ -82,6 +116,18 @@ const ColorList = ({ colors, updateColors }) => {
       )}
       <div className="spacer" />
       {/* stretch - build another form here to add a color */}
+      {/* <form>
+        <input
+          name='color'
+          type='text'
+          value={colorToEdit.color}
+          onChange={e => setColorToEdit({...colorToEdit, color: e.target.value})}
+          />
+          <input
+          value={colorToEdit.code.hex}
+          onChange={e => setColorToEdit({...colorToEdit, code: {hex:e.target.value}})}
+          />
+      </form> */}
     </div>
   );
 };
